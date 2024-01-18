@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -15,7 +16,7 @@ class ProductController extends Controller
     {
         $products = DB::table('products')->when($request->input('name'), function ($query, $name) {
             return $query->where('name', 'like', '%' . $name . '%');
-        })->orderBy('id', 'desc')->paginate(10);
+        })->orderBy('id', 'desc')->paginate(5);
         return view('pages.product.index', [
             'products' => $products,
         ]);
@@ -40,7 +41,15 @@ class ProductController extends Controller
             'price' => 'required',
             'description' => 'required|max:255',
             'category' => 'required|in:Drink,Snack,Food',
+            'image' => 'required|image|mimes:png,jpg,jpeg'
         ]);
+
+        $filename = time() . '.' . $request->image->extension();
+
+        $validate['image'] = $filename;
+
+        // memasukan image ke dalam storage
+        $request->image->storeAs('public/products', $filename);
 
         Product::create($validate);
         return redirect()->route('product.index')->with('success', 'User Successfully Created');
@@ -85,6 +94,10 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
+        if ($product->image) {
+            Storage::delete('public/products/' . $product->image);
+        }
+        // Storage::delete('public/products/' . $product->image);
         $product->delete();
         return redirect()->route('product.index')->with('success', 'Product Successfuly Delete');
     }

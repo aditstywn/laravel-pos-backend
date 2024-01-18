@@ -62,7 +62,14 @@
                                         </tr>
                                         @foreach ($products as $product)
                                             <tr>
-                                                <td><img src="{{ $product->image }}" alt="" width='100'></td>
+                                                <td>
+                                                    @if ($product->image)
+                                                        <img src="{{ asset('storage/products/' . $product->image) }}"
+                                                            alt="" width='100'>
+                                                    @else
+                                                        <span class="badge badge-danger">No Image</span>
+                                                    @endif
+                                                </td>
                                                 <td>{{ $product->category }}</td>
                                                 <td>{{ $product->name }}</td>
                                                 <td>{{ $product->stock }}</td>
@@ -91,9 +98,8 @@
 
                                     </table>
                                 </div>
-                                <div class="float-right">
-                                    {{ $products->withQueryString()->links() }}
-                                </div>
+
+                                {{ $products->links() }}
                             </div>
                         </div>
                     </div>

@@ -90,9 +90,8 @@
 
                                     </table>
                                 </div>
-                                <div class="float-right">
-                                    {{ $users->withQueryString()->links() }}
-                                </div>
+
+                                {{ $users->withQueryString()->links() }}
                             </div>
                         </div>
                     </div>
